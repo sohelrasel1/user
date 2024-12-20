@@ -102,7 +102,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
     return PopScope(
       canPop:  Navigator.canPop(context),
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvoked: (didPop) {
         if(widget.fromNotification) {
           Get.offAllNamed(RouteHelper.getInitialRoute());
         }else {

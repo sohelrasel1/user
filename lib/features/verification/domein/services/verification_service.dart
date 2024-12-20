@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:sixam_mart/common/models/response_model.dart';
 import 'package:sixam_mart/features/auth/domain/models/auth_response_model.dart';
@@ -10,7 +12,9 @@ class VerificationService implements VerificationServiceInterface {
   final VerificationRepositoryInterface verificationRepoInterface;
   final AuthRepositoryInterface authRepoInterface;
 
-  VerificationService({required this.verificationRepoInterface, required this.authRepoInterface});
+  VerificationService(
+      {required this.verificationRepoInterface,
+      required this.authRepoInterface});
 
   @override
   Future<ResponseModel> forgetPassword(String? phone) async {
@@ -18,8 +22,10 @@ class VerificationService implements VerificationServiceInterface {
   }
 
   @override
-  Future<ResponseModel> resetPassword(String? resetToken, String number, String password, String confirmPassword) async {
-    return await verificationRepoInterface.resetPassword(resetToken, number, password, confirmPassword);
+  Future<ResponseModel> resetPassword(String? resetToken, String number,
+      String password, String confirmPassword) async {
+    return await verificationRepoInterface.resetPassword(
+        resetToken, number, password, confirmPassword);
   }
 
 /*  @override
@@ -37,14 +43,17 @@ class VerificationService implements VerificationServiceInterface {
   Future<ResponseModel> verifyPhone(VerificationDataModel data) async {
     Response response = await verificationRepoInterface.verifyPhone(data);
     ResponseModel responseModel;
+      log('request data $data');
     if (response.statusCode == 200) {
-      AuthResponseModel authResponse = AuthResponseModel.fromJson(response.body);
-      if(authResponse.isExistUser == null && authResponse.isPersonalInfo!) {
+      AuthResponseModel authResponse =
+          AuthResponseModel.fromJson(response.body);
+      if (authResponse.isExistUser == null && authResponse.isPersonalInfo!) {
         authRepoInterface.saveUserToken(authResponse.token ?? '');
         await authRepoInterface.updateToken();
         authRepoInterface.clearSharedPrefGuestId();
       }
-      responseModel = ResponseModel(true, authResponse.token??'', authResponseModel: authResponse);
+      responseModel = ResponseModel(true, authResponse.token ?? '',
+          authResponseModel: authResponse);
     } else {
       responseModel = ResponseModel(false, response.statusText);
     }
@@ -68,19 +77,56 @@ class VerificationService implements VerificationServiceInterface {
   }*/
 
   @override
-  Future<ResponseModel> verifyFirebaseOtp({required String phoneNumber, required String session, required String otp, required String loginType, required String? token, required bool isSignUpPage, required bool isForgetPassPage}) async {
+  Future<ResponseModel> verifyFirebaseOtp(
+      {required String phoneNumber,
+      required String session,
+      required String otp,
+      required String loginType,
+      required String? token,
+      required bool isSignUpPage,
+      required bool isForgetPassPage}) async {
     ResponseModel responseModel = ResponseModel(false, '');
-    if(isForgetPassPage) {
-      responseModel = await verificationRepoInterface.verifyForgetPassFirebaseOtp(phoneNumber: phoneNumber, session: session, otp: otp);
+    if (isForgetPassPage) {
+      responseModel =
+          await verificationRepoInterface.verifyForgetPassFirebaseOtp(
+              phoneNumber: phoneNumber, session: session, otp: otp);
     } else {
-      responseModel = await verificationRepoInterface.verifyFirebaseOtp(phoneNumber: phoneNumber, session: session, otp: otp, loginType: loginType);
-      if(responseModel.isSuccess && responseModel.authResponseModel != null && responseModel.authResponseModel!.token != null) {
-        authRepoInterface.saveUserToken(responseModel.authResponseModel!.token!);
+      responseModel = await verificationRepoInterface.verifyFirebaseOtp(
+          phoneNumber: phoneNumber,
+          session: session,
+          otp: otp,
+          loginType: loginType);
+      if (responseModel.isSuccess &&
+          responseModel.authResponseModel != null &&
+          responseModel.authResponseModel!.token != null) {
+        authRepoInterface
+            .saveUserToken(responseModel.authResponseModel!.token!);
         await authRepoInterface.updateToken();
         authRepoInterface.clearSharedPrefGuestId();
       }
     }
     return responseModel;
   }
-
+  
+  @override
+  Future<ResponseModel> verifySignupOtp(VerificationDataModel data) async {
+    Response response = await verificationRepoInterface.verifySignUpOtp(data);
+    ResponseModel responseModel;
+      log('request data $data');
+    if (response.statusCode == 200) {
+      log('this api called');
+      AuthResponseModel authResponse =
+          AuthResponseModel.fromJson(response.body);
+      if (authResponse.isExistUser == null && authResponse.isPersonalInfo!) {
+        authRepoInterface.saveUserToken(authResponse.token ?? '');
+        await authRepoInterface.updateToken();
+        authRepoInterface.clearSharedPrefGuestId();
+      }
+      responseModel = ResponseModel(true, authResponse.token ?? '',
+          authResponseModel: authResponse);
+    } else {
+      responseModel = ResponseModel(false, response.statusText);
+    }
+    return responseModel;
+  }
 }

@@ -1318,5 +1318,6 @@
   "password_reset_successfully": "Password reset successfully",
   "enter_name": "Enter Name",
   "timed_out_please_try_again_after_few_minutes": "Timed out. Please try again after few minutes",
-  "from_you": "from you"
+  "from_you": "from you",
+  "get_otp": "Get otp"
 }

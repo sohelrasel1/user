@@ -104,7 +104,7 @@ class CategoryItemScreenState extends State<CategoryItemScreen> with TickerProvi
 
       return PopScope(
         canPop: true,
-        onPopInvokedWithResult: (didPop, result) async {
+        onPopInvoked: (didPop) async {
           if(catController.isSearching) {
             catController.toggleSearch();
           }else {

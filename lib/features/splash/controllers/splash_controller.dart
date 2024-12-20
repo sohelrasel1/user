@@ -1,27 +1,29 @@
+import 'dart:developer';
+
+import 'package:get/get.dart';
+import 'package:sixam_mart/api/api_client.dart';
 import 'package:sixam_mart/common/enums/data_source_enum.dart';
+import 'package:sixam_mart/common/models/config_model.dart';
+import 'package:sixam_mart/common/models/module_model.dart';
 import 'package:sixam_mart/common/models/response_model.dart';
+import 'package:sixam_mart/common/widgets/custom_snackbar.dart';
+import 'package:sixam_mart/features/address/controllers/address_controller.dart';
 import 'package:sixam_mart/features/auth/controllers/auth_controller.dart';
 import 'package:sixam_mart/features/banner/controllers/banner_controller.dart';
+import 'package:sixam_mart/features/cart/controllers/cart_controller.dart';
 import 'package:sixam_mart/features/category/controllers/category_controller.dart';
+import 'package:sixam_mart/features/favourite/controllers/favourite_controller.dart';
 import 'package:sixam_mart/features/flash_sale/controllers/flash_sale_controller.dart';
 import 'package:sixam_mart/features/home/controllers/home_controller.dart';
+import 'package:sixam_mart/features/home/screens/home_screen.dart';
 import 'package:sixam_mart/features/item/controllers/campaign_controller.dart';
-import 'package:sixam_mart/features/cart/controllers/cart_controller.dart';
 import 'package:sixam_mart/features/item/controllers/item_controller.dart';
 import 'package:sixam_mart/features/notification/domain/models/notification_body_model.dart';
 import 'package:sixam_mart/features/profile/controllers/profile_controller.dart';
-import 'package:sixam_mart/features/store/controllers/store_controller.dart';
-import 'package:sixam_mart/features/favourite/controllers/favourite_controller.dart';
-import 'package:sixam_mart/api/api_client.dart';
 import 'package:sixam_mart/features/splash/domain/models/landing_model.dart';
-import 'package:sixam_mart/common/models/config_model.dart';
-import 'package:sixam_mart/common/models/module_model.dart';
-import 'package:get/get.dart';
-import 'package:sixam_mart/features/address/controllers/address_controller.dart';
-import 'package:sixam_mart/helper/auth_helper.dart';
-import 'package:sixam_mart/common/widgets/custom_snackbar.dart';
-import 'package:sixam_mart/features/home/screens/home_screen.dart';
 import 'package:sixam_mart/features/splash/domain/services/splash_service_interface.dart';
+import 'package:sixam_mart/features/store/controllers/store_controller.dart';
+import 'package:sixam_mart/helper/auth_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/helper/splash_route_helper.dart';
 import 'package:universal_html/html.dart' as html;
@@ -81,35 +83,54 @@ class SplashController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> getConfigData({NotificationBodyModel? notificationBody, bool loadModuleData = false, bool loadLandingData = false, DataSourceEnum source = DataSourceEnum.local, bool fromMainFunction = false, bool fromDemoReset = false}) async {
+  Future<void> getConfigData(
+      {NotificationBodyModel? notificationBody,
+      bool loadModuleData = false,
+      bool loadLandingData = false,
+      DataSourceEnum source = DataSourceEnum.local,
+      bool fromMainFunction = false,
+      bool fromDemoReset = false}) async {
     _hasConnection = true;
     _moduleIndex = 0;
     Response response;
-    if(source == DataSourceEnum.local && !fromDemoReset) {
-      response = await splashServiceInterface.getConfigData(source: DataSourceEnum.local);
-      _handleConfigResponse(response, loadModuleData, loadLandingData, fromMainFunction, fromDemoReset, notificationBody);
-      getConfigData(loadModuleData: loadModuleData, loadLandingData: loadLandingData, source: DataSourceEnum.client);
-
+    if (source == DataSourceEnum.local && !fromDemoReset) {
+      response = await splashServiceInterface.getConfigData(
+          source: DataSourceEnum.local);
+      _handleConfigResponse(response, loadModuleData, loadLandingData,
+          fromMainFunction, fromDemoReset, notificationBody);
+      getConfigData(
+          loadModuleData: loadModuleData,
+          loadLandingData: loadLandingData,
+          source: DataSourceEnum.client);
     } else {
-      response = await splashServiceInterface.getConfigData(source: DataSourceEnum.client);
-      _handleConfigResponse(response, loadModuleData, loadLandingData, fromMainFunction, fromDemoReset, notificationBody);
+      response = await splashServiceInterface.getConfigData(
+          source: DataSourceEnum.client);
+      _handleConfigResponse(response, loadModuleData, loadLandingData,
+          fromMainFunction, fromDemoReset, notificationBody);
     }
-
   }
 
-  Future<void> _handleConfigResponse(Response response, bool loadModuleData, bool loadLandingData, bool fromMainFunction, bool fromDemoReset, NotificationBodyModel? notificationBody) async {
-    if(response.statusCode == 200) {
+  Future<void> _handleConfigResponse(
+      Response response,
+      bool loadModuleData,
+      bool loadLandingData,
+      bool fromMainFunction,
+      bool fromDemoReset,
+      NotificationBodyModel? notificationBody) async {
+    if (response.statusCode == 200) {
       _data = response.body;
+      log(' this is from call data $_data');
       _configModel = ConfigModel.fromJson(response.body);
-      if(_configModel!.module != null) {
+      if (_configModel!.module != null) {
         setModule(_configModel!.module);
-      }else if(GetPlatform.isWeb || (loadModuleData && _module != null)) {
-        setModule(GetPlatform.isWeb ? splashServiceInterface.getModule() : _module);
+      } else if (GetPlatform.isWeb || (loadModuleData && _module != null)) {
+        setModule(
+            GetPlatform.isWeb ? splashServiceInterface.getModule() : _module);
       }
-      if(loadLandingData){
+      if (loadLandingData) {
         await getLandingPageData();
       }
-      if(fromMainFunction) {
+      if (fromMainFunction) {
         _mainConfigRouting();
       } else if (fromDemoReset) {
         Get.offAllNamed(RouteHelper.getInitialRoute(fromSplash: true));
@@ -117,8 +138,8 @@ class SplashController extends GetxController implements GetxService {
         route(body: notificationBody);
       }
       _onRemoveLoader();
-    }else {
-      if(response.statusText == ApiClient.noInternetMessage) {
+    } else {
+      if (response.statusText == ApiClient.noInternetMessage) {
         _hasConnection = false;
       }
     }
@@ -128,7 +149,7 @@ class SplashController extends GetxController implements GetxService {
   _mainConfigRouting() async {
     if (Get.find<AuthController>().isLoggedIn()) {
       Get.find<AuthController>().updateToken();
-      if(Get.find<SplashController>().module != null) {
+      if (Get.find<SplashController>().module != null) {
         await Get.find<FavouriteController>().getFavouriteList();
       }
     }
@@ -141,32 +162,35 @@ class SplashController extends GetxController implements GetxService {
     }
   }
 
-  Future<void> getLandingPageData({DataSourceEnum source = DataSourceEnum.local}) async {
+  Future<void> getLandingPageData(
+      {DataSourceEnum source = DataSourceEnum.local}) async {
     LandingModel? landingModel;
-    if(source == DataSourceEnum.local) {
-      landingModel = await splashServiceInterface.getLandingPageData(source: DataSourceEnum.local);
+    if (source == DataSourceEnum.local) {
+      landingModel = await splashServiceInterface.getLandingPageData(
+          source: DataSourceEnum.local);
       _prepareLandingModel(landingModel);
       getLandingPageData(source: DataSourceEnum.client);
     } else {
-      landingModel = await splashServiceInterface.getLandingPageData(source: DataSourceEnum.client);
+      landingModel = await splashServiceInterface.getLandingPageData(
+          source: DataSourceEnum.client);
       _prepareLandingModel(landingModel);
     }
-
   }
 
   _prepareLandingModel(LandingModel? landingModel) {
-    if(landingModel != null) {
+    if (landingModel != null) {
       _landingModel = landingModel;
-      hoverStates = List<bool>.generate(_landingModel!.availableZoneList!.length, (index) => false);
+      hoverStates = List<bool>.generate(
+          _landingModel!.availableZoneList!.length, (index) => false);
     }
     update();
   }
 
   Future<void> initSharedData() async {
-    if(!GetPlatform.isWeb) {
+    if (!GetPlatform.isWeb) {
       _module = null;
       splashServiceInterface.initSharedData();
-    }else {
+    } else {
       _module = await splashServiceInterface.initSharedData();
     }
     _cacheModule = splashServiceInterface.getCacheModule();
@@ -174,7 +198,8 @@ class SplashController extends GetxController implements GetxService {
   }
 
   void setCacheConfigModule(ModuleModel? cacheModule) {
-    _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][cacheModule!.moduleType]);
+    _configModel!.moduleConfig!.module =
+        Module.fromJson(_data!['module_config'][cacheModule!.moduleType]);
   }
 
   bool? showIntro() {
@@ -192,44 +217,54 @@ class SplashController extends GetxController implements GetxService {
   Future<void> setModule(ModuleModel? module, {bool notify = true}) async {
     _module = module;
     splashServiceInterface.setModule(module);
-    if(module != null) {
-      if(_configModel != null) {
-        _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][module.moduleType]);
+    if (module != null) {
+      if (_configModel != null) {
+        _configModel!.moduleConfig!.module =
+            Module.fromJson(_data!['module_config'][module.moduleType]);
       }
       await splashServiceInterface.setCacheModule(module);
-      if((AuthHelper.isLoggedIn() || AuthHelper.isGuestLoggedIn()) && Get.find<SplashController>().cacheModule != null) {
+      if ((AuthHelper.isLoggedIn() || AuthHelper.isGuestLoggedIn()) &&
+          Get.find<SplashController>().cacheModule != null) {
         Get.find<CartController>().getCartDataOnline();
       }
     }
-    if(AuthHelper.isLoggedIn()) {
-      if(Get.find<SplashController>().module != null) {
+    if (AuthHelper.isLoggedIn()) {
+      if (Get.find<SplashController>().module != null) {
         Get.find<HomeController>().getCashBackOfferList();
         Get.find<FavouriteController>().getFavouriteList();
       }
     }
-    if(notify) {
+    if (notify) {
       update();
     }
   }
 
   Module getModuleConfig(String? moduleType) {
+    log('this is log data for ziko vai ${_data!['module_config']}');
+    log('this is log data for ziko vai1 $moduleType');
+    log('this is log data for ziko vai2 ${_data!['module_config'][moduleType]}');
     Module module = Module.fromJson(_data!['module_config'][moduleType]);
-    moduleType == 'food' ? module.newVariation = true : module.newVariation = false;
+    moduleType == 'food'
+        ? module.newVariation = true
+        : module.newVariation = false;
     return module;
   }
 
-  Future<void> getModules({Map<String, String>? headers, DataSourceEnum dataSource = DataSourceEnum.local}) async {
+  Future<void> getModules(
+      {Map<String, String>? headers,
+      DataSourceEnum dataSource = DataSourceEnum.local}) async {
     _moduleIndex = 0;
     List<ModuleModel>? moduleList;
-    if(dataSource == DataSourceEnum.local) {
-      moduleList = await splashServiceInterface.getModules(headers: headers, source: DataSourceEnum.local);
+    if (dataSource == DataSourceEnum.local) {
+      moduleList = await splashServiceInterface.getModules(
+          headers: headers, source: DataSourceEnum.local);
       _prepareModuleList(moduleList);
       getModules(headers: headers, dataSource: DataSourceEnum.client);
     } else {
-      moduleList = await splashServiceInterface.getModules(headers: headers, source: DataSourceEnum.client);
+      moduleList = await splashServiceInterface.getModules(
+          headers: headers, source: DataSourceEnum.client);
       _prepareModuleList(moduleList);
     }
-
   }
 
   _prepareModuleList(List<ModuleModel>? moduleList) {
@@ -241,15 +276,19 @@ class SplashController extends GetxController implements GetxService {
   }
 
   Future<void> _showInterestPage() async {
-    if(!Get.find<ProfileController>().userInfoModel!.selectedModuleForInterest!.contains(Get.find<SplashController>().module!.id)
-        && (Get.find<SplashController>().module!.moduleType == 'food' || Get.find<SplashController>().module!.moduleType == 'grocery' || Get.find<SplashController>().module!.moduleType == 'ecommerce')
-    ) {
+    if (!Get.find<ProfileController>()
+            .userInfoModel!
+            .selectedModuleForInterest!
+            .contains(Get.find<SplashController>().module!.id) &&
+        (Get.find<SplashController>().module!.moduleType == 'food' ||
+            Get.find<SplashController>().module!.moduleType == 'grocery' ||
+            Get.find<SplashController>().module!.moduleType == 'ecommerce')) {
       await Get.toNamed(RouteHelper.getInterestRoute());
     }
   }
 
   void switchModule(int index, bool fromPhone) async {
-    if(_module == null || _module!.id != _moduleList![index].id) {
+    if (_module == null || _module!.id != _moduleList![index].id) {
       await Get.find<SplashController>().setModule(_moduleList![index]);
       Get.find<CartController>().getCartDataOnline();
       Get.find<ItemController>().clearItemLists();
@@ -258,7 +297,7 @@ class SplashController extends GetxController implements GetxService {
       Get.find<CampaignController>().itemAndBasicCampaignNull();
       Get.find<FlashSaleController>().setEmptyFlashSale(fromModule: true);
 
-      if(AuthHelper.isLoggedIn()) {
+      if (AuthHelper.isLoggedIn()) {
         Get.find<HomeController>().getCashBackOfferList();
         await _showInterestPage();
       }
@@ -280,7 +319,7 @@ class SplashController extends GetxController implements GetxService {
     Get.find<BannerController>().getFeaturedBanner();
     getModules();
     Get.find<HomeController>().forcefullyNullCashBackOffers();
-    if(AuthHelper.isLoggedIn()) {
+    if (AuthHelper.isLoggedIn()) {
       Get.find<AddressController>().getAddressList();
     }
     Get.find<StoreController>().getFeaturedStoreList();
@@ -294,10 +333,11 @@ class SplashController extends GetxController implements GetxService {
   Future<bool> subscribeMail(String email) async {
     _isLoading = true;
     update();
-    ResponseModel responseModel = await splashServiceInterface.subscribeEmail(email);
+    ResponseModel responseModel =
+        await splashServiceInterface.subscribeEmail(email);
     if (responseModel.isSuccess) {
       showCustomSnackBar(responseModel.message, isError: false);
-    }else {
+    } else {
       showCustomSnackBar(responseModel.message, isError: true);
     }
     _isLoading = false;
@@ -311,7 +351,7 @@ class SplashController extends GetxController implements GetxService {
     update();
   }
 
-  getCookiesData(){
+  getCookiesData() {
     _savedCookiesData = splashServiceInterface.getSavedCookiesData();
     update();
   }
@@ -320,8 +360,8 @@ class SplashController extends GetxController implements GetxService {
     splashServiceInterface.cookiesStatusChange(data);
   }
 
-  bool getAcceptCookiesStatus(String data) => splashServiceInterface.getAcceptCookiesStatus(data);
-
+  bool getAcceptCookiesStatus(String data) =>
+      splashServiceInterface.getAcceptCookiesStatus(data);
 
   void saveWebSuggestedLocationStatus(bool data) {
     splashServiceInterface.saveSuggestedLocationStatus(data);
@@ -329,7 +369,7 @@ class SplashController extends GetxController implements GetxService {
     update();
   }
 
-  void getWebSuggestedLocationStatus(){
+  void getWebSuggestedLocationStatus() {
     _webSuggestedLocation = splashServiceInterface.getSuggestedLocationStatus();
   }
 
@@ -344,7 +384,7 @@ class SplashController extends GetxController implements GetxService {
     update();
   }
 
-  void getReferBottomSheetStatus(){
+  void getReferBottomSheetStatus() {
     _showReferBottomSheet = splashServiceInterface.getReferBottomSheetStatus();
   }
 
@@ -354,5 +394,4 @@ class SplashController extends GetxController implements GetxService {
     hoverStates[index] = state;
     update();
   }
-
 }

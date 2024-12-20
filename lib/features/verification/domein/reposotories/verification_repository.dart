@@ -54,6 +54,11 @@ class VerificationRepository implements VerificationRepositoryInterface{
   Future<Response> verifyPhone(VerificationDataModel data) async {
     return await apiClient.postData(AppConstants.verifyPhoneUri, data.toJson(), handleError: false);
   }
+  
+  @override
+  Future<Response> verifySignUpOtp(VerificationDataModel data) async {
+    return await apiClient.postData(AppConstants.verifySignupOtp, data.toJson(), handleError: false);
+  }
 
 /*  @override
   Future<ResponseModel> verifyFirebaseOtp({required String phoneNumber, required String session, required String otp, required bool isSignUpPage}) async {
@@ -143,6 +148,8 @@ class VerificationRepository implements VerificationRepositoryInterface{
   Future update(Map<String, dynamic> body, int? id) {
     throw UnimplementedError();
   }
+  
+
 
 }
 

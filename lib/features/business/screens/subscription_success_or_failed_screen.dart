@@ -31,7 +31,7 @@ class _SubscriptionSuccessOrFailedScreenState extends State<SubscriptionSuccessO
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvoked: (didPop) async {
         Get.offAllNamed(RouteHelper.getInitialRoute());
       },
       child: Scaffold(

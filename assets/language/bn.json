@@ -1318,5 +1318,6 @@
   "password_reset_successfully": "পাসওয়ার্ড সফলভাবে পুনরায় সেট করা হয়েছে",
   "enter_name": "নাম লিখুন",
   "timed_out_please_try_again_after_few_minutes": "সময় উত্তীর্ণ হয়েছে। দয়া করে কয়েক মিনিট পর আবার চেষ্টা করুন",
-  "from_you": "দূরে"
+  "from_you": "দূরে",
+  "get_otp": "Get otp"
 }

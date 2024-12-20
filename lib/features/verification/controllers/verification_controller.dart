@@ -68,6 +68,17 @@ class VerificationController extends GetxController implements GetxService {
     update();
     return responseModel;
   }
+    Future<ResponseModel> verifySignupOtp({required VerificationDataModel data}) async {
+    _isLoading = true;
+    update();
+    ResponseModel responseModel = await verificationServiceInterface.verifySignupOtp(data);
+    if(responseModel.isSuccess && responseModel.authResponseModel != null && responseModel.authResponseModel!.isExistUser == null && responseModel.authResponseModel!.isPersonalInfo!) {
+      Get.find<ProfileController>().getUserInfo();
+    }
+    _isLoading = false;
+    update();
+    return responseModel;
+  }
 
 
   Future<ResponseModel> verifyToken(String? email) async {

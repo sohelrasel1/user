@@ -188,7 +188,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                         Get.find<ProfileController>().updateUserInfo(widget.userModel!, Get.find<AuthController>().getUserToken(), fromButton: true);
                       }
                       else if(widget.fromSignUp) {
-                        verificationController.verifyPhone(data: VerificationDataModel(
+                        verificationController.verifySignupOtp(data: VerificationDataModel(
                           phone: _number, email: _email, verificationType: _number != null
                             ? VerificationTypeEnum.phone.name : VerificationTypeEnum.email.name,
                           otp: verificationController.verificationCode, loginType: widget.loginType,

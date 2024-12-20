@@ -77,7 +77,7 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
 
     return PopScope(
       canPop:  Navigator.canPop(context),
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvoked: (didPop) {
         if(widget.fromNotification) {
           Get.offAllNamed(RouteHelper.getInitialRoute());
         }else {

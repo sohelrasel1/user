@@ -133,7 +133,7 @@ class DashboardScreenState extends State<DashboardScreen> {
       builder: (splashController) {
         return PopScope(
           canPop: false,
-          onPopInvokedWithResult: (didPop, result) async {
+          onPopInvoked: (didPop) async {
             if (_pageIndex != 0) {
               _setPage(0);
             } else {

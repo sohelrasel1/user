@@ -28,7 +28,7 @@ class SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: Navigator.canPop(context),
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvoked: (didPop) async {
         if(widget.fromNotification || widget.fromResetPassword) {
           Navigator.pushNamed(context, RouteHelper.getInitialRoute());
         } else if(widget.exitFromApp) {

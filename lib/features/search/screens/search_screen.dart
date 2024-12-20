@@ -72,7 +72,7 @@ class SearchScreenState extends State<SearchScreen> with TickerProviderStateMixi
   Widget build(BuildContext context) {
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvoked: (didPop) async {
         if(Get.find<search.SearchController>().isSearchMode) {
           return;
         }else {

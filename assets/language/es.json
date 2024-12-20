@@ -1318,5 +1318,6 @@
   "password_reset_successfully": "Restablecimiento de contraseña exitoso",
   "enter_name": "Introduzca el nombre",
   "timed_out_please_try_again_after_few_minutes": "Se agotó el tiempo. Inténtalo de nuevo después de unos minutos.",
-  "from_you": "de ti"
+  "from_you": "de ti",
+  "get_otp": "Obtener otp"
 }

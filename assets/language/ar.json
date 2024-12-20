@@ -1318,5 +1318,6 @@
   "password_reset_successfully": "تم إعادة تعيين كلمة المرور بنجاح",
   "enter_name": "أدخل الاسم",
   "timed_out_please_try_again_after_few_minutes": "انتهت المهلة. يرجى المحاولة مرة أخرى بعد بضع دقائق",
-  "from_you": "منك"
+  "from_you": "منك",
+  "get_otp": "احصل على كلمة مرور لمرة واحدة"
 }
